@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serious Game Learning Room</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://source.unsplash.com/800x600/?classroom,education') no-repeat center;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            width: 800px;
+            height: 600px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .robot-section {
+            width: 250px;
+            background: linear-gradient(135deg, #007bff, #00c6ff);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .robot-section img {
+            width: 80%;
+            max-width: 180px;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #ff6b6b, #ffcc5c);
+            color: white;
+            padding: 18px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            scroll-behavior: smooth;
+            background: url('https://source.unsplash.com/600x800/?kids,learning') no-repeat center;
+            background-size: cover;
+        }
+
+        .message {
+            max-width: 75%;
+            margin: 10px;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            line-height: 1.4;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #007bff, #00c6ff);
+            color: white;
+            border-top-right-radius: 0;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background: linear-gradient(135deg, #ffcc5c, #ff6b6b);
+            color: white;
+            border-top-left-radius: 0;
+        }
+
+        .typing {
+            font-style: italic;
+            color: gray;
+        }
+
+        .chat-input {
+            display: flex;
+            border-top: 2px solid #ffcc5c;
+            background: white;
+            padding: 12px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ff6b6b;
+            border-radius: 10px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .chat-input button {
+            background: linear-gradient(135deg, #ff6b6b, #ffcc5c);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            margin-left: 5px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .chat-input button:hover {
+            background: linear-gradient(135deg, #ff4747, #ffb74d);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 左侧 AI 机器人 -->
+    <div class="robot-section">
+        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712037.png" alt="EduBot">
+        <h2>Breda University 🤖</h2>
+        <div><b style="color: black">Notice:</b>I have limited capabilities. You can only input:<b style="color: black">Hello</b>、<b style="color: black">What is Serious game</b> or <b style="color: black">Bye</b>.
+            If you ask anything else, I will give the same response.</div>
+
+    </div>
+
+    <!-- 右侧 聊天界面 -->
+    <div class="chat-container">
+        <div class="chat-header">📚 Serious Game Learning Room 🤖</div>
+        <div class="chat-box" id="chat-box"></div>
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Ask me study questions!！📖✏️" onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send 🚀</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function sendMessage() {
+        let inputBox = document.getElementById("user-input");
+        let chatBox = document.getElementById("chat-box");
+        let userMessage = inputBox.value.trim();
+
+        if (userMessage === "") return;
+
+        appendMessage(userMessage, "user-message");
+        inputBox.value = "";
+
+        let typingMessage = document.createElement("div");
+        typingMessage.className = "message bot-message typing";
+        typingMessage.textContent = "Robot is thinking...";
+        chatBox.appendChild(typingMessage);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        setTimeout(() => {
+            chatBox.removeChild(typingMessage);
+            let botMessage = getBotResponse(userMessage);
+            appendMessage(botMessage, "bot-message");
+        }, 1000);
+    }
+
+    function appendMessage(text, className) {
+        let chatBox = document.getElementById("chat-box");
+        let messageDiv = document.createElement("div");
+        messageDiv.className = "message " + className;
+        messageDiv.textContent = text;
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function getBotResponse(userMessage) {
+        let responses = {
+            "Hello": "Hello！I am Robot，your serious game learning assistant！📖",
+            "What is Serious game": "A Serious Game is a game designed for purposes beyond pure entertainment. It is used in education, training, healthcare, business, military, and other fields to teach skills, raise awareness, or solve real-world problems in an engaging way.\n" +
+                "\n" +
+                "For example,\n" +
+                "\n" +
+                "Education: Games that teach math, history, or science in a fun way.\n" +
+                "Healthcare: Games that help patients with rehabilitation or mental health.\n" +
+                "Corporate Training: Simulations for improving leadership, teamwork, or customer service.\n" +
+                "Military & Safety Training: Simulated environments for practicing strategies and decision-making.\n" +
+                "The goal of serious games is to combine fun and learning to improve engagement and effectiveness.",
+            "Bye": "Bye! Have a great day! 😊🚀",
+            "默认": "This question is a bit difficult! You can try asking another question!😊"
+        };
+        return responses[userMessage] || responses["默认"];
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    }
+</script>
+
+</body>
+</html>
